@@ -32,10 +32,10 @@ const char* trata_caixa_alta_baixa(char * info){
 
 void inserir(no_arv * arvore, no_arv param_busca, char* copia_para_comparar, int ordenacao ){
   no_arv * node;
-  char* copia_nome_arvore = trata_caixa_alta_baixa(*arvore->nome_arq);
+  char* copia_nome_arvore = trata_caixa_alta_baixa(arvore->nome_arq);
   if (*arvore!=NULL){
-    if (copia_nome_arvore>copia_para_comparar){inserir(*arvore->left, param_busca, copia_para_comparar);}
-    if (copia_nome_arvore<copia_para_comparar){inserir(*arvore->right, param_busca, copia_para_comparar);}
+    if (copia_nome_arvore>copia_para_comparar){inserir(*arvore->left, param_busca, copia_para_comparar, ordenacao );}
+    if (copia_nome_arvore<copia_para_comparar){inserir(*arvore->right, param_busca, copia_para_comparar,ordenacao );}
     if (copia_nome_arvore==copia_para_comparar){
       if (*arvore->tipo=="rw"){
       node->ordem = ordenacao;
@@ -44,7 +44,7 @@ void inserir(no_arv * arvore, no_arv param_busca, char* copia_para_comparar, int
       node->tamanho=param_busca->tamanho;
       if(tamanho!='1'){strcat(tamanho," byte");}
       else{strcat(tamanho, " bytes");}}
-      else{inserir(*arvore->left, param_busca, copia_para_comparar);}
+      else{inserir(*arvore->left, param_busca, copia_para_comparar, ordenacao );}
     }
   }
   else{
