@@ -9,21 +9,13 @@
 
 //estrutura arvore
 typedef struct no_arv{
-    char[51] nome_arq;
-    char[3] tipo;
+    char nome_arq[51];
+    char tipo[3];
     char * tamanho;
     int ordem;
     struct no_arv* right;
     struct no_arv* left;
-}no_arv
-
-/* atribuir a cada iteração
-char * string = "hello world"; 
-  int i;
-  char * copia = (char*)malloc(11*sizeof(char));
-  for (i=0; i < 11; i++) {
-    copia[i] = string[i];    
-} */
+}no_arv;
 
 const char* trata_caixa_alta_baixa(char * info){
   int indice = 0;
@@ -32,7 +24,7 @@ const char* trata_caixa_alta_baixa(char * info){
   if(info[indice] >= 'a' && info[indice] <= 'z'){
       copia[indice] = info[indice]-32;}
   else{copia[indice]=info[indice];}
-  i++;
+  indice++;
 }
     return copia;
 }
@@ -55,14 +47,17 @@ void inserir(no_arv * arvore, no_arv param_busca, char* copia_para_comparar, int
       else{inserir(*arvore->left, param_busca, copia_para_comparar);}
     }
   }
-  else{node=(no_arv)malloc(sizeof(no_arv));
+  else{
+  node =(no_arv)malloc(sizeof(no_arv));
   node->ordem = ordenacao;
   node->nome_arq=param_busca->nome_arq;
+  node->tamanho=param_busca->tamanho; 
   node->tipo=param_busca->tipo;
-  node->tamanho=param_busca->tamanho;
-  if(tamanho!='1'){strcat(tamanho," byte");}
-  else{strcat(tamanho, " bytes");} }
-}
+
+  if(tamanho!='1'){
+      strcat(tamanho," byte");
+      else{strcat(tamanho, " bytes");} }
+}}
 
 void percorrer_epd(no_arv * arvore){
 
@@ -77,7 +72,7 @@ void percorrer_edp(no_arv * arvore){
 
 int main(int argc, char* argv[]) {
   FILE* input = fopen(argv[1], "r");
-	FILE* output = fopen(argv[2], "w");
+  FILE* output = fopen(argv[2], "w");
   char * entrada;
 // declara string e cria copia para comparar
   int ordenacao = 0;
