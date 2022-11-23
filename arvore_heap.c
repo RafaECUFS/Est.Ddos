@@ -1,16 +1,31 @@
-#include <stdint.h>
 #include <stdio.h>
-#include <String.h>
 #include <stdlib.h>
-
+#include <string.h>
 typedef struct NO{
-    int codigo_aposta, acertos;
-    int * numeros_apostados;
-}NO;
+    int acertos;
+    char* codigo_aposta;
 
-void heapify_max ( NO** V , uint32_t Tam , uint32_t i ) {
+}NO;
+void trocar (NO** V, int Pai , int i){
+    NO* Valor_pai = (NO*)calloc(1,sizeof(NO));
+    NO* Valor_atual = (NO*)calloc(1,sizeof(NO));
+    Valor_pai -> codigo_aposta = (char*) calloc(17,sizeof(char));
+    Valor_atual -> codigo_aposta = (char*) calloc(17,sizeof(char));
+    Valor_atual ->acertos = V[i]->acertos;
+    Valor_pai ->acertos= V[Pai]->acertos;
+    V[Pai]->acertos = Valor_atual->acertos;
+    V[i]->acertos= Valor_pai->acertos;
+    strcpy(Valor_atual->codigo_aposta,V[i]->codigo_aposta);
+    strcpy(Valor_pai -> codigo_aposta,V[Pai]->codigo_aposta);
+    strcpy(V[Pai]->codigo_aposta,Valor_atual->codigo_aposta);
+    strcpy(V[i]-> codigo_aposta,Valor_pai->codigo_aposta);
+    free(Valor_pai);
+    free(Valor_atual);
+}
+//fazer heapify depois de constrir os heaps
+void heapify_max ( NO** V , int Tam , int i ) {
  // Declaração dos índices
-  uint32_t P = i , E = (2*i)+1 , D = (2*i)+2 ;
+  int P = i , E = (2*i)+1 , D = (2*i)+2 ;
 // Filho da esquerda é maior
   if ( E < Tam && (V[E]-> acertos) > (V[P]->acertos)){ P = E ;}
  // Filho da direita é maior
@@ -18,11 +33,14 @@ void heapify_max ( NO** V , uint32_t Tam , uint32_t i ) {
 // Troca e chamada recursiva
   if ( P != i ) {
      trocar (V , P , i );
-     heapify_max (V , Tam , P ) ;
+     if (i>0){
+     heapify_max (V , Tam , i-1 ) ;}
 }}
-void heapify_min ( NO** V , uint32_t Tam , uint32_t i ) {
+void heapify_min ( NO** V , int Tam , int i ) {
  // Declaração dos índices
-  uint32_t P = i , E = (2*i)+1 , D = (2*i)+2 ;
+  int P = i;
+  int E = (2*i)+1;
+  int D = (2*i)+2 ;
 // Filho da esquerda é maior
   if ( E < Tam && (V[E]-> acertos) < (V[P]->acertos)){ P = E ;}
  // Filho da direita é maior
@@ -30,152 +48,90 @@ void heapify_min ( NO** V , uint32_t Tam , uint32_t i ) {
 // Troca e chamada recursiva
   if ( P != i ) {
   trocar (V , P , i ) ;
-  heapify_min (V , Tam , P ) ;
+  if (i>0){
+  heapify_min (V , Tam , i-1 ) ;}
 }}
-void trocar (NO** V, uint32_t Pai , uint32_t i){
-    uint32_t Valor_pai = V[Pai];
-    uint32_t Valor_atual= V[i];
-    V[i]=Valor_pai;
-    V[Pai]=Valor_atual;
+void extrair_MAX(NO** V, int indice_apostas, NO** Ganhadores_max, int indice_ganhadores ){
+    strcpy((Ganhadores_max[indice_ganhadores]->codigo_aposta),(V[0]->codigo_aposta));
+    strcpy((V[0]->codigo_aposta),V[indice_apostas]->codigo_aposta);
+    int pontos = (V[indice_apostas]->acertos);
+    V[0]->acertos = pontos;
+    indice_apostas-=1;
+    int Pai= (indice_apostas-1)/2;
+    heapify_max(V,indice_apostas,Pai);
 }
-void inserir_max(NO** V, NO* Apostador,uint32_t indice){
-    uint32_t tamanho=indice+1; //CRIE TAMANHO PARA OS HEAPS FORA DESSA FUNÇÃO
-    V[indice] = Apostador;
-    heapify_max(V,tamanho,indice);
+void extrair_MIN(NO** V, int indice_apostas, NO** Ganhadores_min, int indice_ganhadores ){
+    strcpy((Ganhadores_min[indice_ganhadores]->codigo_aposta),(V[0]->codigo_aposta));
+    strcpy((V[0]->codigo_aposta),V[indice_apostas]->codigo_aposta);
+    int pontos = (V[indice_apostas]->acertos);
+    V[0]->acertos = pontos;
+    indice_apostas-=1;
+    int Pai= (indice_apostas-1)/2;
+    heapify_min(V,indice_apostas,Pai);
 }
-void inserir_min(NO** V, NO* Apostador,uint32_t indice){
-    uint32_t tamanho=indice+1;
-    V[indice] = Apostador;
-    heapify_min(V,tamanho,indice);
-}
-void extrair_MAX(NO** V, uint32_t indice_apostas, NO** Ganhadores_max, uint32_t indice_ganhadores ){
-    Ganhadores_max[indice_ganhadores]=V[0];
-    V[0] = V[indice_apostas];
-    V[indice_apostas] = NULL;
-    heapify_max(V,(indice_apostas)-1,0);
-}
-void extrair_MIN(NO** V, uint32_t indice_apostas, NO** Ganhadores_min, uint32_t indice_ganhadores  ){
-    Ganhadores_min[indice_ganhadores]=V[0];
-    V[0] = V[indice_apostas];
-    V[indice_apostas] = NULL;
-    heapify_min(V,(indice_apostas)-1,0);
-}
-int comparar(uint32_t* sorteados, uint32_t* apostados, uint32_t apostas){
-    uint32_t posicao_s, posicao_a;
-    uint32_t qt_acertos=0;
-    //iterando para cada numero apostado
-    for(posicao_a=0; posicao_a<15; posicao_a++){
-        //iterando para cada numero sorteado
-    for(posicao_s=0; posicao_s<15; posicao_s++){
-    //comparando os numeros de cada lista
-    if (sorteados[posicao_s] == apostados[posicao_a]){
-        qt_acertos+=1;
-        break;
-    }
-    else{
-            continue;
-        }
-    }
-    }
-
-
-    return qt_acertos;
-}
-
-/*solução: extrair da raiz, fazer heap para subir o maior valor e parar quando nao for mais igual ao maior*/
 int main(int argc, char* argv[]){
-
+  //declarando variaveis 
+  int premio, qt_apostadores, num_apostado,maior,menor,indice_ganhadores=0;
+  int sorteados[10];
+  char* entrada;
+  int indice=0,pontuacao=0,num_maior=0,num_menor=10;  
+  //abrindo arquivos e checando erro
   FILE* input = fopen(argv[1], "r");
   FILE* output = fopen(argv[2], "w");
-  uint32_t premio, qt_apostadores;
-  uint32_t indice=0;
-  uint32_t indice_ganhadores=0;
-  uint32_t* sorteados;
-  uint32_t tam_max=0;
-  uint32_t tam_min=0;
-  uint32_t N_ganhadores_max = 0;
-  uint32_t N_ganhadores_min = 0;
-  NO* Apostador;
-  fscanf(input,"%d ",premio);
-  fscanf(input,"%d ",qt_apostadores);
-  fscanf(input,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",sorteados[0], sorteados[1], sorteados[2], sorteados[3], sorteados[4], sorteados[5], sorteados[6],
-  sorteados[7], sorteados[8], sorteados[9], sorteados[10], sorteados[11], sorteados[12], sorteados[13], sorteados[14]);
-  NO** Vetor_MAX = calloc(qt_apostadores,sizeof(NO));
-  NO** Vetor_MIN = calloc(qt_apostadores,sizeof(NO));
-  char* entrada, cod_aposta;
-  int nums_apostados[15];
-  uint32_t pontuacao=0;
-  //pegando entrada
+  if(input == NULL){
+    printf("ERRO!");
+    return 0;}
+  //coletando variaveis anteriores às apostas
+  fscanf(input,"%d",premio);
+  fscanf(input,"%d",qt_apostadores); 
+  for(int i=0;i<10;i++){
+    fscanf(input,"%d",sorteados[i]);
+  }
+
+  //alocando memoria para os vetores 
+  NO** Vetor_MAX =(NO**) calloc(qt_apostadores,sizeof(NO*));
+  NO** Vetor_MIN = (NO**) calloc(qt_apostadores,sizeof(NO*));
+
+  //loop de leitura do arquivo
   while(fscanf(input, "%s", entrada)==1){
-    //separando o codigo de aposta
-    cod_aposta=strtok(entrada, " ");
-    Apostador->codigo_aposta=cod_aposta;
+    //alocando memoria e copiando o codigo de aposta para o nó
+    Vetor_MAX[indice]->codigo_aposta= (char*) calloc(17,sizeof(char));
+    Vetor_MIN[indice]->codigo_aposta= (char*) calloc(17,sizeof(char));
+    strcpy((Vetor_MAX[indice]->codigo_aposta),entrada);
+    strcpy((Vetor_MIN[indice]->codigo_aposta),entrada);
 
     //pegando cada numero
     for(int indice_apostados=0;indice_apostados<15;indice_apostados++){
-        nums_apostados[indice_apostados]=strtok(NULL, " ");
-        //comparando com os numeros sorteados
-        for (int indice_corretos=0; indice_corretos<15; indice_corretos++){
-            if (nums_apostados[indice_apostados]==sorteados[indice_corretos]){
+        fscanf(input,"%d",num_apostado);
+
+        //comparando o numero com os 10 numeros sorteados
+        for (int indice_corretos=0; indice_corretos<10; indice_corretos++){
+            if (num_apostado==sorteados[indice_corretos]){
                 pontuacao++;
-                break;
-            }}}
-    //inserindo no vetor de ponteiros
-    Apostador->acertos=pontuacao;
-    (Apostador->numeros_apostados) = nums_apostados;
-    inserir_max(Vetor_MAX,Apostador,indice);
-    if ((Vetor_MAX[0]->acertos)==(Vetor_MAX[indice]->acertos)){
-        N_ganhadores_max+=1;
-    }
-    else if ((Vetor_MAX[0]->acertos)<(Vetor_MAX[indice]->acertos)){
-        N_ganhadores_max=1;
-    }
-    inserir_min(Vetor_MIN,Apostador,indice);
-    if ((Vetor_MIN[0]->acertos)==(Vetor_MIN[indice]->acertos)){
-        N_ganhadores_min+=1;
-    }
-    else if ((Vetor_MIN[0]->acertos)>(Vetor_MIN[indice]->acertos)){
-        N_ganhadores_min=1;
-    }
-    pontuacao=0;
+                break;}}}
+
+    //conferindo qual o maior/menor valor de acertos e a quantidade de vencedores
+    if(num_maior==pontuacao){maior++;}
+    else{
+      if(num_maior<pontuacao){maior=1;
+    num_maior=pontuacao;}}
+    if(num_menor==pontuacao){menor++;}
+    else{if(num_menor<pontuacao){menor=1;
+    num_menor=pontuacao;}}
+
+    //atribuindo pontuacao 
+    Vetor_MAX[indice]->acertos=pontuacao;
+    Vetor_MIN[indice]->acertos=pontuacao;
     indice+=1;}
-  NO** Ganhadores_max = calloc(N_ganhadores_max,sizeof(NO));
-  NO** Ganhadores_min = calloc(N_ganhadores_min,sizeof(NO));
-  //extraindo para os vetores de ganhadores
-  uint32_t maior = Vetor_MAX[0] -> acertos;
-  uint32_t menor = Vetor_MIN[0] -> acertos;
-  while ((Vetor_MAX[0] -> acertos)== maior){
-      extrair_MAX(Vetor_MAX,indice,Ganhadores_max,indice_ganhadores);
-      indice_ganhadores+=1;
-  }
 
-  //definir premio e qt de ganhadores no max
-  uint32_t ganhadores_heap_max = indice_ganhadores + 1;
-  uint32_t premio_heap_max = ((premio/2)/ganhadores_heap_max);
+    //construção do heap e qt de acertos vencedora
+    int ultimo_no_interno = (qt_apostadores -1)/2;
+    heapify_max(Vetor_MAX,qt_apostadores,(ultimo_no_interno));
+    heapify_min(Vetor_MIN,qt_apostadores,(ultimo_no_interno));
+    
 
-  //extraindo para vetores de ganhadores
-  indice_ganhadores = 0;
-  while ((Vetor_MIN[0] -> acertos)== menor){
-      extrair_MAX(Vetor_MIN,indice,Ganhadores_min,indice_ganhadores);
-      indice_ganhadores+=1;
-  }
-  //definir premio e qt de ganhadores no min
-  uint32_t ganhadores_heap_min = indice_ganhadores + 1;
-  uint32_t premio_heap_min = ((premio/2)/ganhadores_heap_min);
 
-  //printando para o arquivo de saída
-fprintf(output,"[%d:%d:%d]\n",ganhadores_heap_max,maior,premio_heap_max);
-for(uint32_t ganhadores=0; ganhadores<ganhadores_heap_max; ganhadores++){
-  fprintf(output,"%s\n",(Ganhadores_max[ganhadores] -> codigo_aposta));
-}
-fprintf(output,"[%d:%d:%d]\n",ganhadores_heap_min,menor,premio_heap_min);
-for(uint32_t ganhadores=0; ganhadores<ganhadores_heap_min; ganhadores++){
-  fprintf(output,"%s\n",(Ganhadores_min[ganhadores] -> codigo_aposta));
-}
-fclose(input);
-fclose(output);
-free(Vetor_MAX);
-free(Vetor_MIN);
-free(Ganhadores_max);
-free(Ganhadores_min);
-return 0;}
+
+  fclose(input);
+  fclose(output);
+  return 0;}
