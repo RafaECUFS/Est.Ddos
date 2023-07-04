@@ -36,6 +36,28 @@ elemento* busca(Lista* lista, char stringx[51]){
     
 void insere(Lista* lista, char stringx[51]){
     elemento* novo = malloc(sizeof(elemento));
+    if (lista->cabeca!=NULL)
+    {
+        strcpy(novo->User,stringx);
+        lista->cauda=novo;
+        novo->Prox=lista->cabeca;
+        novo->Anter=lista->cauda;
+        lista->cauda->Prox=novo;
+        lista->cabeca->Anter=novo;
+        lista->cauda=novo;
+    }
+    
+    else{
+        strcpy(novo->User,stringx);
+        lista->cabeca=novo;
+        lista->cauda=novo;
+        lista->cabeca->Anter=lista->cauda;
+        lista->cabeca->Prox=lista->cauda;
+        lista->cauda->Anter=lista->cabeca;
+        lista->cauda->Prox=lista->cabeca;
+    }
+    
+    
 }
 void remove(Lista* lista, char stringx[51]){
     elemento* no_interesse=NULL;
