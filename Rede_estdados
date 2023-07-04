@@ -15,12 +15,13 @@ typedef struct Lista{
     elemento* cabeca, *cauda;
 }Lista;
 
-Lista cria_lista(Lista* lista){
+void cria_lista(Lista* lista){
     lista->cabeca=NULL;
+    lista->cauda=NULL;
 }
-elemento* busca(elemento* no, char stringx[51]){
+elemento* busca(Lista* lista, char stringx[51]){
 
-    elemento* atual = no, *inicial=no;
+    elemento* atual=lista->cabeca, *inicial=lista->cabeca;
     if(atual->User!=stringx){
         atual=atual->Prox;
         while(atual->User!=stringx && atual!=inicial){
@@ -33,13 +34,13 @@ elemento* busca(elemento* no, char stringx[51]){
     return atual;
     }       
     
-void insere(elemento* no, char stringx[51]){
+void insere(Lista* lista, char stringx[51]){
     elemento* novo = malloc(sizeof(elemento));
 }
-void remove(elemento* no, char stringx[51]){
+void remove(Lista* lista, char stringx[51]){
     elemento* no_interesse=NULL;
-    no_interesse=busca(no,stringx);
+    no_interesse=busca(lista,stringx);
 }
-void show(elemento* no, char stringx[51]){
-    busca(no,stringx);
+void show(Lista* lista, char stringx[51]){
+    busca(lista,stringx);
 }
