@@ -1,0 +1,45 @@
+//LISTA = REFERÊNCIAS ENCADEADAS
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <String.h>
+typedef struct elemento{
+    //conteudo;
+    //ponteiros;
+    char User[51];
+    elemento* Anter;
+    elemento* Prox;
+}elemento;
+
+typedef struct Lista{
+    elemento* cabeca, *cauda;
+}Lista;
+
+Lista cria_lista(Lista* lista){
+    lista->cabeca=NULL;
+}
+elemento* busca(elemento* no, char stringx[51]){
+
+    elemento* atual = no, *inicial=no;
+    if(atual->User!=stringx){
+        atual=atual->Prox;
+        while(atual->User!=stringx && atual!=inicial){
+            atual=atual->Prox;
+        }
+        if(atual==inicial){
+            return NULL;
+        }
+    }
+    return atual;
+    }       
+    
+void insere(elemento* no, char stringx[51]){
+    elemento* novo = malloc(sizeof(elemento));
+}
+void remove(elemento* no, char stringx[51]){
+    elemento* no_interesse=NULL;
+    no_interesse=busca(no,stringx);
+}
+void show(elemento* no, char stringx[51]){
+    busca(no,stringx);
+}
