@@ -20,18 +20,22 @@ void cria_lista(Lista* lista){
     lista->cauda=NULL;
 }
 elemento* busca(Lista* lista, char stringx[51]){
-
     elemento* atual=lista->cabeca, *inicial=lista->cabeca;
     if(atual->User!=stringx){
         atual=atual->Prox;
         while(atual->User!=stringx && atual!=inicial){
             atual=atual->Prox;
         }
+        if(atual->User==stringx){
+            return atual;
+        }
         if(atual==inicial){
             return NULL;
         }
     }
-    return atual;
+    else{
+        return atual;
+    }
     }       
     
 void insere(Lista* lista, char stringx[51]){
@@ -60,9 +64,23 @@ void insere(Lista* lista, char stringx[51]){
     
 }
 void remove(Lista* lista, char stringx[51]){
-    elemento* no_interesse=NULL;
-    no_interesse=busca(lista,stringx);
+    elemento* no_interesse=busca(lista,stringx);
+    if(no_interesse==NULL){
+
+    }
+    else{
+        no_interesse->Prox->Anter=no_interesse->Anter;
+        no_interesse->Anter->Prox=no_interesse->Prox;
+        free(no_interesse);
+        no_interesse=NULL;
+    }
 }
 void show(Lista* lista, char stringx[51]){
-    busca(lista,stringx);
+    elemento* no_interesse = busca(lista,stringx);
+    if(no_interesse==NULL){
+
+    }
+    else{
+        fprintf();
+    }
 }
