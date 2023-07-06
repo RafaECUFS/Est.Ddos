@@ -38,7 +38,7 @@ elemento* busca(Lista* lista, char stringx[51]){
     }
     }       
     
-void insere(Lista* lista, char stringx[51]){
+void insere(Lista* lista, char stringx[51], FILE* output){
     elemento* novo = malloc(sizeof(elemento));
     if (lista->cabeca!=NULL)
     {
@@ -49,6 +49,7 @@ void insere(Lista* lista, char stringx[51]){
         lista->cauda->Prox=novo;
         lista->cabeca->Anter=novo;
         lista->cauda=novo;
+        fprintf(output, "[ OK  ] ADD %s",stringx);
     }
     
     else{
@@ -59,28 +60,35 @@ void insere(Lista* lista, char stringx[51]){
         lista->cabeca->Prox=lista->cauda;
         lista->cauda->Anter=lista->cabeca;
         lista->cauda->Prox=lista->cabeca;
+        fprintf(output, "[ OK  ] ADD %s",stringx);
     }
     
     
 }
-void remove(Lista* lista, char stringx[51]){
+void remove(Lista* lista, char stringx[51], FILE* output){
     elemento* no_interesse=busca(lista,stringx);
     if(no_interesse==NULL){
-
+        fprintf(output, "[ERROR] REMOVE %s",stringx);
     }
     else{
         no_interesse->Prox->Anter=no_interesse->Anter;
         no_interesse->Anter->Prox=no_interesse->Prox;
         free(no_interesse);
         no_interesse=NULL;
+        fprintf(output, "[ OK  ] REMOVE %s",stringx);
     }
 }
-void show(Lista* lista, char stringx[51]){
+void show(Lista* lista, char stringx[51], FILE* output){
     elemento* no_interesse = busca(lista,stringx);
+    
     if(no_interesse==NULL){
-
+        fprintf(output, "[ERROR] ?<-%s->?", stringx);
     }
     else{
-        fprintf();
+        fprintf(output, "[ OK  ] %s<-%s->%s", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
     }
+}
+int main(int argc, char*argv[]){
+    FILE *input= NULL;
+    FILE *output= NULL;
 }
