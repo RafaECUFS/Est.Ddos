@@ -3,24 +3,22 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <String.h>
-typedef struct elemento{
-    //conteudo;
-    //ponteiros;
+typedef struct no{
     char User[51];
-    elemento* Anter;
-    elemento* Prox;
-}elemento;
+    struct no *Prox;
+    struct no *Anter;
+}No;
 
-typedef struct Lista{
-    elemento* cabeca, *cauda;
+typedef struct{
+    No* cabeca, *cauda;
 }Lista;
 
 void cria_lista(Lista* lista){
     lista->cabeca=NULL;
     lista->cauda=NULL;
 }
-elemento* busca(Lista* lista, char stringx[51]){
-    elemento* atual=lista->cabeca, *inicial=lista->cabeca;
+No* busca(Lista* lista, char stringx[51]){
+    No* atual=lista->cabeca, *inicial=lista->cabeca;
     if(atual->User!=stringx){
         atual=atual->Prox;
         while(atual->User!=stringx && atual!=inicial){
@@ -33,13 +31,24 @@ elemento* busca(Lista* lista, char stringx[51]){
             return NULL;
         }
     }
-    else{
         return atual;
-    }
     }       
+    void remover(Lista* lista, char stringx[51], FILE* output){
+    No* no_interesse=busca(lista,stringx);
+    if(no_interesse==NULL){
+        fprintf(output, "[ERROR] REMOVE %s",stringx);
+    }
+    else{
+        no_interesse->Prox->Anter=no_interesse->Anter;
+        no_interesse->Anter->Prox=no_interesse->Prox;
+        free(no_interesse);
+        no_interesse=NULL;
+        fprintf(output, "[ OK  ] REMOVE %s",stringx);
+    }
+}
     
 void insere(Lista* lista, char stringx[51], FILE* output){
-    elemento* novo = malloc(sizeof(elemento));
+    No* novo = malloc(sizeof(No));
     if (lista->cabeca!=NULL)
     {
         strcpy(novo->User,stringx);
@@ -61,25 +70,12 @@ void insere(Lista* lista, char stringx[51], FILE* output){
         lista->cauda->Anter=lista->cabeca;
         lista->cauda->Prox=lista->cabeca;
         fprintf(output, "[ OK  ] ADD %s",stringx);
-    }
-    
-    
+    } 
 }
-void remove(Lista* lista, char stringx[51], FILE* output){
-    elemento* no_interesse=busca(lista,stringx);
-    if(no_interesse==NULL){
-        fprintf(output, "[ERROR] REMOVE %s",stringx);
-    }
-    else{
-        no_interesse->Prox->Anter=no_interesse->Anter;
-        no_interesse->Anter->Prox=no_interesse->Prox;
-        free(no_interesse);
-        no_interesse=NULL;
-        fprintf(output, "[ OK  ] REMOVE %s",stringx);
-    }
-}
+
 void show(Lista* lista, char stringx[51], FILE* output){
-    elemento* no_interesse = busca(lista,stringx);
+    
+    No* no_interesse = busca(lista,stringx);
     
     if(no_interesse==NULL){
         fprintf(output, "[ERROR] ?<-%s->?", stringx);
@@ -91,4 +87,21 @@ void show(Lista* lista, char stringx[51], FILE* output){
 int main(int argc, char*argv[]){
     FILE *input= NULL;
     FILE *output= NULL;
+    input = fopen(argv[1],"r");
+    if(input==NULL){
+        printf("ERRO!");
+        fclose(input);
+        return 0;
+    }
+    output=fopen(argv[2],"w");
+    if(output==NULL){
+        printf("ERRO!");
+        fclose(output);
+        return 0;
+    }
+    char* oper = malloc(6*sizeof(char));
+    char* nome = malloc(51*sizeof(char));
+    fscanf(input,"%s",oper);
+    fgets(nome,51*sizeof(char),input);
+    printf("%s %s",oper, nome);
 }
