@@ -5,8 +5,7 @@
 #include <String.h>
 typedef struct no{
     char User[52];
-    struct
-     no *Prox;
+    struct no *Prox;
     struct no *Anter;
 }No;
 
@@ -20,31 +19,36 @@ void cria_lista(Lista* lista){
 }
 No* busca(Lista* lista, char stringx[52]){
     No* atual=lista->cabeca, *inicial=lista->cabeca;
-    if(atual->User!=stringx){
+    int test = strcmp(atual->User,stringx);
+    printf("%d\n",test);
+    if(test==0){
+        printf("b%s\n", stringx);
+        printf("b%s", atual->User);
         atual=atual->Prox;
-        while(atual->User!=stringx && atual!=inicial){
+        while(strcmp(atual->User,stringx)!=0 && atual!=inicial){
             atual=atual->Prox;
         }
-        if(atual->User==stringx){
+        if(strcmp(atual->User,stringx)==0){
             return atual;
         }
         if(atual==inicial){
             return NULL;
         }
     }
-        return atual;
+    else{return atual;}
+        
     }       
     void remover(Lista* lista, char stringx[52], FILE* output){
     No* no_interesse=busca(lista,stringx);
     if(no_interesse==NULL){
-        fprintf(output, "[ERROR] REMOVE %s",stringx);
+        fprintf(output, "[ERROR] REMOVE %s\n",stringx);
     }
     else{
         no_interesse->Prox->Anter=no_interesse->Anter;
         no_interesse->Anter->Prox=no_interesse->Prox;
         free(no_interesse);
         no_interesse=NULL;
-        fprintf(output, "[ OK  ] REMOVE %s",stringx);
+        fprintf(output, "[ OK  ] REMOVE %s\n",stringx);
     }
 }
     
@@ -59,7 +63,7 @@ void insere(Lista* lista, char stringx[52], FILE* output){
         lista->cauda->Prox=novo;
         lista->cabeca->Anter=novo;
         lista->cauda=novo;
-        fprintf(output, "[ OK  ] ADD %s",stringx);
+        fprintf(output, "[ OK  ] ADD %s\n",stringx);
     }
     
     else{
@@ -70,19 +74,20 @@ void insere(Lista* lista, char stringx[52], FILE* output){
         lista->cabeca->Prox=lista->cauda;
         lista->cauda->Anter=lista->cabeca;
         lista->cauda->Prox=lista->cabeca;
-        fprintf(output, "[ OK  ] ADD%s",stringx);
+        fprintf(output, "[ OK  ] ADD %s\n",stringx);
     } 
 }
 
 void show(Lista* lista, char stringx[52], FILE* output){
-    
     No* no_interesse = busca(lista,stringx);
     
-    if(no_interesse==NULL){
-        fprintf(output, "[ERROR] ?<-%s->?", stringx);
+    
+    if(strcmp(no_interesse->User,stringx)==0){
+        fprintf(output, "[ OK  ] %s<-%s->%s\n", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
+        printf("%s",no_interesse->Anter->User);
     }
     else{
-        fprintf(output, "[ OK  ] %s<-%s->%s", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
+        fprintf(output, "[ERROR] ?<-%s->?\n", stringx);
     }
 }
 int main(int argc, char*argv[]){
@@ -104,21 +109,25 @@ int main(int argc, char*argv[]){
     cria_lista(&Rede);
     char* oper = malloc(6*sizeof(char));
     char* nome = malloc(52*sizeof(char));
-    
-    while(fscanf(input,"%s",oper)){
+    int i = 0;
+    while(i<2){
+        i++;
         fscanf(input,"%s",oper);
         fgets(nome,52*sizeof(char),input);
-        if(oper=="ADD"){
+        nome = nome+1;
+        printf("%s ",oper);
+        printf("%s\n",nome);
+        if(strcmp(oper,"ADD")==0){
             insere(&Rede,nome,output);
             continue;
     }
-        if(oper=="SHOW"){
+        if(strcmp(oper,"SHOW")==0){
             show(&Rede,nome,output);
             continue;
     }
-        if(oper=="REMOVE"){
+        if(strcmp(oper,"REMOVE")==0){
             remover(&Rede,nome,output);
             continue;
     }}
 
-}
+    }
