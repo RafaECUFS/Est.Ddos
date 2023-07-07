@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <String.h>
 typedef struct no{
-    char User[51];
-    struct no *Prox;
+    char User[52];
+    struct
+     no *Prox;
     struct no *Anter;
 }No;
 
@@ -17,7 +18,7 @@ void cria_lista(Lista* lista){
     lista->cabeca=NULL;
     lista->cauda=NULL;
 }
-No* busca(Lista* lista, char stringx[51]){
+No* busca(Lista* lista, char stringx[52]){
     No* atual=lista->cabeca, *inicial=lista->cabeca;
     if(atual->User!=stringx){
         atual=atual->Prox;
@@ -33,7 +34,7 @@ No* busca(Lista* lista, char stringx[51]){
     }
         return atual;
     }       
-    void remover(Lista* lista, char stringx[51], FILE* output){
+    void remover(Lista* lista, char stringx[52], FILE* output){
     No* no_interesse=busca(lista,stringx);
     if(no_interesse==NULL){
         fprintf(output, "[ERROR] REMOVE %s",stringx);
@@ -47,7 +48,7 @@ No* busca(Lista* lista, char stringx[51]){
     }
 }
     
-void insere(Lista* lista, char stringx[51], FILE* output){
+void insere(Lista* lista, char stringx[52], FILE* output){
     No* novo = malloc(sizeof(No));
     if (lista->cabeca!=NULL)
     {
@@ -69,11 +70,11 @@ void insere(Lista* lista, char stringx[51], FILE* output){
         lista->cabeca->Prox=lista->cauda;
         lista->cauda->Anter=lista->cabeca;
         lista->cauda->Prox=lista->cabeca;
-        fprintf(output, "[ OK  ] ADD %s",stringx);
+        fprintf(output, "[ OK  ] ADD%s",stringx);
     } 
 }
 
-void show(Lista* lista, char stringx[51], FILE* output){
+void show(Lista* lista, char stringx[52], FILE* output){
     
     No* no_interesse = busca(lista,stringx);
     
@@ -86,22 +87,38 @@ void show(Lista* lista, char stringx[51], FILE* output){
 }
 int main(int argc, char*argv[]){
     FILE *input= NULL;
-    FILE *output= NULL;
     input = fopen(argv[1],"r");
     if(input==NULL){
         printf("ERRO!");
         fclose(input);
         return 0;
     }
+    FILE *output= NULL;
     output=fopen(argv[2],"w");
     if(output==NULL){
         printf("ERRO!");
         fclose(output);
         return 0;
     }
+    Lista Rede;
+    cria_lista(&Rede);
     char* oper = malloc(6*sizeof(char));
-    char* nome = malloc(51*sizeof(char));
-    fscanf(input,"%s",oper);
-    fgets(nome,51*sizeof(char),input);
-    printf("%s %s",oper, nome);
+    char* nome = malloc(52*sizeof(char));
+    
+    while(fscanf(input,"%s",oper)){
+        fscanf(input,"%s",oper);
+        fgets(nome,52*sizeof(char),input);
+        if(oper=="ADD"){
+            insere(&Rede,nome,output);
+            continue;
+    }
+        if(oper=="SHOW"){
+            show(&Rede,nome,output);
+            continue;
+    }
+        if(oper=="REMOVE"){
+            remover(&Rede,nome,output);
+            continue;
+    }}
+
 }
