@@ -122,10 +122,11 @@ int main(int argc, char*argv[]){
     char* oper = malloc(6*sizeof(char));
     char* nome = malloc(51*sizeof(char));
     int i = 0;
-    while(i<6){
+    while(i<7){
         i++;
         fscanf(input,"%s",oper);
         fgets(nome,51*sizeof(char),input);
+        nome[strlen(nome)-1]='\0';
         nome = nome+1;
         printf("%s ",oper);
         printf("%s\n",nome);
