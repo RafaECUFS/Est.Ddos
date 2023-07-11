@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <String.h>
 typedef struct no{
-    char User[52];
+    char User[51];
     struct no *Prox;
     struct no *Anter;
 }No;
@@ -17,12 +17,14 @@ void cria_lista(Lista* lista){
     lista->cabeca=NULL;
     lista->cauda=NULL;
 }
-No* busca(Lista* lista, char stringx[52]){
+No* busca(Lista* lista, char stringx[51]){
     No* atual=lista->cabeca, *inicial=lista->cabeca;
     int test = strcmp(atual->User,stringx);
+    printf("%sxx\n", stringx);
     printf("%d\n",test);
+    //busca nao achou
     if(test==0){
-        printf("b%s\n", stringx);
+        
         printf("b%s", atual->User);
         atual=atual->Prox;
         while(strcmp(atual->User,stringx)!=0 && atual!=inicial){
@@ -38,7 +40,7 @@ No* busca(Lista* lista, char stringx[52]){
     else{return atual;}
         
     }       
-    void remover(Lista* lista, char stringx[52], FILE* output){
+    void remover(Lista* lista, char stringx[51], FILE* output){
     No* no_interesse=busca(lista,stringx);
     if(no_interesse==NULL){
         fprintf(output, "[ERROR] REMOVE %s\n",stringx);
@@ -52,21 +54,29 @@ No* busca(Lista* lista, char stringx[52]){
     }
 }
     
-void insere(Lista* lista, char stringx[52], FILE* output){
+void insere(Lista* lista, char stringx[51], FILE* output){
     No* novo = malloc(sizeof(No));
+    No* repetido;
+    
     if (lista->cabeca!=NULL)
-    {
+    {   repetido = busca(lista,stringx);
+        if(repetido==NULL){
         strcpy(novo->User,stringx);
-        lista->cauda=novo;
-        novo->Prox=lista->cabeca;
-        novo->Anter=lista->cauda;
-        lista->cauda->Prox=novo;
-        lista->cabeca->Anter=novo;
-        lista->cauda=novo;
+        lista->cauda->Prox=novo; //a atual cauda aponta pro novo elemento
+        novo->Anter=lista->cauda;//anterior do novo elemento é a atual cauda
+        lista->cauda=novo; //novo elemento é definido como a nova cauda
+        lista->cauda->Prox=lista->cabeca; //proximo da cauda é a cabeça
+        lista->cabeca->Anter=lista->cauda; //anterior da cabeça é a cauda
         fprintf(output, "[ OK  ] ADD %s\n",stringx);
+        }
+        else{
+            fprintf(output, "[ERROR] ADD %s\n",stringx);
+        }
+        
     }
     
     else{
+        
         strcpy(novo->User,stringx);
         lista->cabeca=novo;
         lista->cauda=novo;
@@ -78,13 +88,13 @@ void insere(Lista* lista, char stringx[52], FILE* output){
     } 
 }
 
-void show(Lista* lista, char stringx[52], FILE* output){
+void show(Lista* lista, char stringx[51], FILE* output){
     No* no_interesse = busca(lista,stringx);
     
     
     if(strcmp(no_interesse->User,stringx)==0){
         fprintf(output, "[ OK  ] %s<-%s->%s\n", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
-        printf("%s",no_interesse->Anter->User);
+        printf("[ OK  ] %s<-%s->%s\n", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
     }
     else{
         fprintf(output, "[ERROR] ?<-%s->?\n", stringx);
@@ -108,12 +118,12 @@ int main(int argc, char*argv[]){
     Lista Rede;
     cria_lista(&Rede);
     char* oper = malloc(6*sizeof(char));
-    char* nome = malloc(52*sizeof(char));
+    char* nome = malloc(51*sizeof(char));
     int i = 0;
-    while(i<2){
+    while(i<6){
         i++;
         fscanf(input,"%s",oper);
-        fgets(nome,52*sizeof(char),input);
+        fgets(nome,51*sizeof(char),input);
         nome = nome+1;
         printf("%s ",oper);
         printf("%s\n",nome);
@@ -131,3 +141,6 @@ int main(int argc, char*argv[]){
     }}
 
     }
+
+        
+
