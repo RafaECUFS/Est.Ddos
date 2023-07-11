@@ -20,11 +20,14 @@ void cria_lista(Lista* lista){
 No* busca(Lista* lista, char stringx[51]){
     No* atual=lista->cabeca, *inicial=lista->cabeca;
     int test = strcmp(atual->User,stringx);
-    printf("%sxx\n", stringx);
+    printf("%s\n", stringx);
     printf("%d\n",test);
     //busca nao achou
     if(test==0){
+        return atual;
         
+    }
+    else{
         printf("b%s", atual->User);
         atual=atual->Prox;
         while(strcmp(atual->User,stringx)!=0 && atual!=inicial){
@@ -37,7 +40,6 @@ No* busca(Lista* lista, char stringx[51]){
             return NULL;
         }
     }
-    else{return atual;}
         
     }       
     void remover(Lista* lista, char stringx[51], FILE* output){
