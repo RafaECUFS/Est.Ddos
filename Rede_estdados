@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <String.h>
+#include <string.h>
 typedef struct no{
     char User[51];
     struct no *Prox;
@@ -20,15 +20,12 @@ void cria_lista(Lista* lista){
 No* busca(Lista* lista, char stringx[51]){
     No* atual=lista->cabeca, *inicial=lista->cabeca;
     int test = strcmp(atual->User,stringx);
-    printf("%s\n", stringx);
-    printf("%d\n",test);
-    //busca nao achou
+    //busca achou
     if(test==0){
         return atual;
         
     }
-    else{
-        printf("b%s", atual->User);
+    else{//nao achou
         atual=atual->Prox;
         while(strcmp(atual->User,stringx)!=0 && atual!=inicial){
             atual=atual->Prox;
@@ -96,7 +93,6 @@ void show(Lista* lista, char stringx[51], FILE* output){
     
     if(strcmp(no_interesse->User,stringx)==0){
         fprintf(output, "[ OK  ] %s<-%s->%s\n", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
-        printf("[ OK  ] %s<-%s->%s\n", no_interesse->Anter->User, no_interesse->User, no_interesse->Prox->User);
     }
     else{
         fprintf(output, "[ERROR] ?<-%s->?\n", stringx);
@@ -122,14 +118,11 @@ int main(int argc, char*argv[]){
     char* oper = malloc(6*sizeof(char));
     char* nome = malloc(51*sizeof(char));
     int i = 0;
-    while(i<7){
-        i++;
+    while(1){
         fscanf(input,"%s",oper);
         fgets(nome,51*sizeof(char),input);
         nome[strlen(nome)-1]='\0';
         nome = nome+1;
-        printf("%s ",oper);
-        printf("%s\n",nome);
         if(strcmp(oper,"ADD")==0){
             insere(&Rede,nome,output);
             continue;
@@ -141,7 +134,13 @@ int main(int argc, char*argv[]){
         if(strcmp(oper,"REMOVE")==0){
             remover(&Rede,nome,output);
             continue;
-    }}
+    }
+        }
+    free(oper);
+    free(nome);
+    fclose(input);
+    fclose(output);
+    return 0;
 
     }
 
