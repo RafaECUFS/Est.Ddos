@@ -23,7 +23,7 @@ void trocar(pessoa* cliente, int pai, int filho) {
 }
 
 int main(int argc, char* argv[]) {
-    pessoa* temp_pessoa = malloc(sizeof(pessoa));
+    pessoa* temp_pessoa = (pessoa*)malloc(sizeof(pessoa));
     int indice_orgaos = 0;
     int ind_fila = 0;
 
@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
             
 
             if (lista_orgaos[indice_orgaos].alocado==0) {
+                printf("alocadao = %s\n",lista_orgaos[indice_orgaos].nome_orgao);
                 lista_orgaos[indice_orgaos].fila = (pessoa*)calloc(tam_fila, sizeof(pessoa));
                 printf("orgao = %s\n",lista_orgaos[indice_orgaos].nome_orgao);
                 if (lista_orgaos[indice_orgaos].fila == NULL) {
@@ -84,36 +85,35 @@ int main(int argc, char* argv[]) {
                 }
                 lista_orgaos[indice_orgaos].alocado=1;
                 printf("alocado = %d\n",lista_orgaos[indice_orgaos].alocado);
+                break;
             }   
             //checa se a fila ja foi alocada. se não, aloca.
+        }printf("nome_pessoas = %s\n",temp_pessoa->nome_pessoa);
 
-        }
+        while(lista_orgaos[indice_orgaos].fila[ind_fila].prioridade != 0) {
+            ind_fila+=1;}
+            printf("orgao interesse = %d\n",indice_orgaos);
+            printf("nome_pessoa = %s\n",temp_pessoa->nome_pessoa);       
+            memcpy( &lista_orgaos[indice_orgaos].fila[ind_fila],&temp_pessoa, sizeof(pessoa*));
 
-        for (ind_fila = 0; ind_fila < tam_fila; ind_fila++) {
-            if (lista_orgaos[indice_orgaos].fila[ind_fila].prioridade == 0) {
-                strcpy(temp_pessoa->nome_orgao, lista_orgaos[indice_orgaos].fila[ind_fila].nome_orgao);
-                strcpy(temp_pessoa->nome_pessoa, lista_orgaos[indice_orgaos].fila[ind_fila].nome_pessoa);
-                lista_orgaos[indice_orgaos].fila[ind_fila].idade = temp_pessoa->idade;
+            printf("nome_pessoa = %d\n",lista_orgaos[indice_orgaos].fila[ind_fila].idade);
 
-                printf("aqui2\n");
-
-                if (temp_pessoa->idade < 60) {
-                    lista_orgaos[indice_orgaos].fila[ind_fila].prioridade = 1;
-                } else {
-                    lista_orgaos[indice_orgaos].fila[ind_fila].prioridade = 2;
-                }
-
-                lista_orgaos[indice_orgaos].fila[ind_fila].ordem = ind_fila;
-
-                printf("aqui3\n");
+            if (temp_pessoa->idade < 60) {
+                lista_orgaos[indice_orgaos].fila[ind_fila].prioridade = 1;
+            } else {
+                lista_orgaos[indice_orgaos].fila[ind_fila].prioridade = 2;
             }
+
+            lista_orgaos[indice_orgaos].fila[ind_fila].ordem = ind_fila;
+
+            printf("aqui3\n");
+            
         }
+        fclose(input);
+        fclose(output);
+        free(temp_pessoa);
+        return 0;
     }
 
-    fclose(input);
-    fclose(output);
+    
 
-    free(temp_pessoa);
-
-    return 0;
-}
