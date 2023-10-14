@@ -10,7 +10,7 @@ typedef struct pessoa {
 } pessoa;
 
 typedef struct orgao {
-    int qtd_atend,alocado;
+    int qtd_atend,alocado, last_member;//last_member = ultimo elemento com nós filhos
     char nome_orgao[51];
     struct pessoa* fila;
 } orgao;
@@ -21,12 +21,38 @@ void trocar(pessoa* cliente, int pai, int filho) {
     memcpy(&cliente[filho], &cliente[pai], sizeof(pessoa));
     memcpy(&cliente[pai], &cliente_temp, sizeof(pessoa));
 }
+void heapify(pessoa* arr, int n, int i) {
+    int pai = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && (arr[left].prioridade > arr[pai].prioridade || 
+                    (arr[left].prioridade == arr[pai].prioridade && arr[left].ordem < arr[pai].ordem))) {
+        pai = left;
+    }
+
+    if (right < n && (arr[right].prioridade > arr[pai].prioridade ||
+                     (arr[right].prioridade == arr[pai].prioridade && arr[right].ordem < arr[pai].ordem))) {
+        pai = right;
+    }
+
+    if (pai != i) {
+        trocar(arr, i, pai);
+        heapify(arr, n, pai);
+    }
+}
+void remover(pessoa* person, FILE* output, int tam){//fazer loop para cada heap
+    fprintf(output,"%s",person[0].nome_pessoa);
+    memcpy(&person[0],&person[tam-1], sizeof(pessoa));//remover ultima posição
+    //dentro de um loop fora da função: fprintf orgao + loop(remover) enquanto i<qtd_atend + fprintf \n
+}
 
 int main(int argc, char* argv[]) {
     pessoa* temp_pessoa = (pessoa*)malloc(sizeof(pessoa));
     int indice_orgaos = 0;
     int ind_fila;
     int ind_fil = 0;
+    int ult_pai=0;
 
     FILE* input = fopen(argv[1], "r");
     if (input == NULL) {
@@ -41,7 +67,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    int qtd_orgs, qtd_atend, tam_fila;
+    int qtd_orgs, tam_fila;
     fscanf(input, "%d\n", &qtd_orgs);
 
     orgao* lista_orgaos = (orgao*)malloc(sizeof(orgao) * qtd_orgs);
@@ -68,7 +94,7 @@ int main(int argc, char* argv[]) {
             indice_orgaos++;
             //encontra o orgao igual ao da pessoa
         }
-        
+
         if(indice_orgaos>qtd_orgs){
                 printf("Orgao não encontrado\n");
                 continue;
@@ -101,19 +127,41 @@ int main(int argc, char* argv[]) {
             lista_orgaos[indice_orgaos].fila[ind_fila].ordem = ind_fila;
             
         }
-        /*for(int ind_org=0; ind_org<qtd_orgs; ind_org++){
+        for(int ind_org=0; ind_org<qtd_orgs; ind_org++){//coletar tamanho da fila de cada orgao
             
             if(lista_orgaos[ind_org].alocado==1){
                 ind_fil=0;
                 while(lista_orgaos[ind_org].fila[ind_fil].prioridade==1 || lista_orgaos[ind_org].fila[ind_fil].prioridade==2){
-                        printf("indfil = %d\n",ind_fil);
-                        printf("nome = %s\n", lista_orgaos[ind_org].fila[ind_fil].nome_pessoa);
                         ++ind_fil;
                     }
-                    
+                lista_orgaos[ind_org].last_member=ind_fil;          
             }
-            }*/
+            printf("tamfila=%d\n",lista_orgaos[ind_org].last_member);
+            }
         
+        for(int org_heap=0; org_heap<qtd_orgs;org_heap++){
+            ult_pai=((lista_orgaos[org_heap].last_member - 1)-1)/2;
+            
+            for(;ult_pai>=0;ult_pai--){heapify(lista_orgaos[org_heap].fila,lista_orgaos[org_heap].last_member,ult_pai);}}
+        while(tam_fila>0){
+            for(int org_heap=0; org_heap<qtd_orgs;org_heap++){
+            ult_pai=((lista_orgaos[org_heap].last_member - 1)-1)/2;
+            fprintf(output,"%s:",lista_orgaos[org_heap].nome_orgao);
+            for(int chamadas=0; chamadas<lista_orgaos[org_heap].qtd_atend; chamadas++){
+                remover(lista_orgaos[org_heap].fila,output,lista_orgaos[org_heap].last_member);
+                printf("last = %d\n", lista_orgaos[org_heap].last_member);
+                if( lista_orgaos[org_heap].last_member!=1 && chamadas<(lista_orgaos[org_heap].qtd_atend-1) ){
+                    fprintf(output,",");
+                }
+                lista_orgaos[org_heap].last_member--;
+                tam_fila--;
+                if(lista_orgaos[org_heap].last_member!=0){heapify(lista_orgaos[org_heap].fila,lista_orgaos[org_heap].last_member,0);}
+                else{break;}
+                
+            }
+            fprintf(output,"\n");
+            if(tam_fila==0){break;}
+        }}
         fclose(input);
         fclose(output);
         free(temp_pessoa);
