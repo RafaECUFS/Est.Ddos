@@ -25,7 +25,8 @@ void trocar(pessoa* cliente, int pai, int filho) {
 int main(int argc, char* argv[]) {
     pessoa* temp_pessoa = (pessoa*)malloc(sizeof(pessoa));
     int indice_orgaos = 0;
-    int ind_fila = 0;
+    int ind_fila;
+    int ind_fil = 0;
 
     FILE* input = fopen(argv[1], "r");
     if (input == NULL) {
@@ -42,7 +43,6 @@ int main(int argc, char* argv[]) {
 
     int qtd_orgs, qtd_atend, tam_fila;
     fscanf(input, "%d\n", &qtd_orgs);
-    printf("%d\n", qtd_orgs);
 
     orgao* lista_orgaos = (orgao*)malloc(sizeof(orgao) * qtd_orgs);
     if (lista_orgaos == NULL) {
@@ -60,51 +60,34 @@ int main(int argc, char* argv[]) {
     //pega o valor do tamanho maximo da fila
 
     for (int linha = 0; linha < tam_fila; linha++) {
+        ind_fila = 0;
         indice_orgaos=0;
         fscanf(input, "%50[^|]|%50[^|]|%d\n", temp_pessoa->nome_orgao, temp_pessoa->nome_pessoa, &temp_pessoa->idade);
-        printf("oie%s\n", temp_pessoa->nome_orgao);
-        printf("%s\n", temp_pessoa->nome_pessoa);
-        printf("%d\n", linha);
-        printf("idade = %d\n", temp_pessoa->idade);
         
         while(strcmp(temp_pessoa->nome_orgao, lista_orgaos[indice_orgaos].nome_orgao )!= 0 && indice_orgaos<qtd_orgs){
-            printf("%sd\n", lista_orgaos[indice_orgaos].nome_orgao);
-            printf("%sd\n", temp_pessoa->nome_orgao);
             indice_orgaos++;
             //encontra o orgao igual ao da pessoa
         }
-        printf("deu erro? %d\n",indice_orgaos);
-        if(strcmp(temp_pessoa->nome_orgao, lista_orgaos[indice_orgaos].nome_orgao)==0 ){printf("igual\n");}
+        
         if(indice_orgaos>qtd_orgs){
                 printf("Orgao não encontrado\n");
                 continue;
             }
-        printf("valor = %d\n",lista_orgaos[indice_orgaos].alocado);
             
         if (lista_orgaos[indice_orgaos].alocado==0) {
-            printf("alocadao = %s\n",lista_orgaos[indice_orgaos].nome_orgao);
             lista_orgaos[indice_orgaos].fila = (pessoa*)calloc(tam_fila, sizeof(pessoa));
-            printf("orgao = %s\n",lista_orgaos[indice_orgaos].nome_orgao);
             if (lista_orgaos[indice_orgaos].fila == NULL) {
                 printf("ERRO!");
                 return 1;
                 }
             lista_orgaos[indice_orgaos].alocado=1;
-            printf("alocado = %d\n",lista_orgaos[indice_orgaos].alocado);
             }   
             //checa se a fila ja foi alocada. se não, aloca.
-
-        printf("nome_pessoas = %s\n",temp_pessoa->nome_pessoa);
-        printf("ppp:%d\n",indice_orgaos);
-        printf("ind:%d\n",ind_fila);
         
         while(lista_orgaos[indice_orgaos].fila[ind_fila].prioridade != 0 && ind_fila<tam_fila) {
-            printf("priori:%d\n",lista_orgaos[indice_orgaos].fila[ind_fila].prioridade);
             ind_fila++;}
         if(ind_fila>tam_fila){printf("ERROW!!!");
-        continue;}
-            printf("orgao interesse = %d\n",indice_orgaos);
-            printf("nome_pessoa = %s\n",temp_pessoa->nome_pessoa);       
+        continue;}    
             memcpy( &lista_orgaos[indice_orgaos].fila[ind_fila],temp_pessoa, sizeof(pessoa));
 
             
@@ -116,10 +99,21 @@ int main(int argc, char* argv[]) {
             }
 
             lista_orgaos[indice_orgaos].fila[ind_fila].ordem = ind_fila;
-            printf("pri = %d\n",lista_orgaos[indice_orgaos].fila[ind_fila].prioridade);
-            printf("aqui3\n");
             
         }
+        /*for(int ind_org=0; ind_org<qtd_orgs; ind_org++){
+            
+            if(lista_orgaos[ind_org].alocado==1){
+                ind_fil=0;
+                while(lista_orgaos[ind_org].fila[ind_fil].prioridade==1 || lista_orgaos[ind_org].fila[ind_fil].prioridade==2){
+                        printf("indfil = %d\n",ind_fil);
+                        printf("nome = %s\n", lista_orgaos[ind_org].fila[ind_fil].nome_pessoa);
+                        ++ind_fil;
+                    }
+                    
+            }
+            }*/
+        
         fclose(input);
         fclose(output);
         free(temp_pessoa);
